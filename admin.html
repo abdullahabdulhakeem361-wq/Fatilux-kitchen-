@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard | Food Business</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #101010;
+      color: #ffffff;
+      min-height: 100vh;
+    }
+
+    .layout {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      width: 240px;
+      background: #171717;
+      border-right: 1px solid #303030;
+      padding: 28px 18px;
+      flex-shrink: 0;
+    }
+
+    .brand {
+      color: #e7bd67;
+      font-size: 23px;
+      font-weight: 800;
+      margin-bottom: 40px;
+    }
+
+    .brand span {
+      display: block;
+      color: #888888;
+      font-size: 11px;
+      letter-spacing: 2px;
+      margin-top: 7px;
+    }
+
+    .nav-label {
+      color: #777777;
+      font-size: 11px;
+      letter-spacing: 1.5px;
+      margin: 25px 0 12px;
+    }
+
+    .nav-link {
+      display: block;
+      width: 100%;
+      text-align: left;
+      padding: 13px 12px;
+      margin-bottom: 7px;
+      border: none;
+      border-radius: 8px;
+      background: transparent;
+      color: #bdbdbd;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .nav-link:hover,
+    .nav-link.active {
+      background: #302819;
+      color: #e7bd67;
+    }
+
+    .main {
+      flex: 1;
+      min-width: 0;
+      padding: 30px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 35px;
+    }
+
+    .topbar h1 {
+      font-size: 27px;
+      margin-bottom: 8px;
+    }
+
+    .muted {
+      color: #999999;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .admin-badge {
+      padding: 10px 14px;
+      background: #262116;
+      color: #e7bd67;
+      border: 1px solid #4a3b20;
+      border-radius: 8px;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .section {
+      display: none;
+    }
+
+    .section.active {
+      display: block;
+    }
+
+    .section-heading {
+      margin-bottom: 22px;
+    }
+
+    .section-heading h2 {
+      font-size: 21px;
+      margin-bottom: 7px;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+
+    .card {
+      background: #191919;
+      border: 1px solid #303030;
+      border-radius: 12px;
+      padding: 22px;
+      min-width: 0;
+    }
+
+    .stat-label {
+      color: #a5a5a5;
+      font-size: 12px;
+      margin-bottom: 15px;
+    }
+
+    .stat-value {
+      font-size: 27px;
+      font-weight: 750;
+      color: #e7bd67;
+      overflow-wrap: anywhere;
+    }
+
+    .stat-note {
+      color: #777777;
+      font-size: 11px;
+      margin-top: 10px;
+    }
+
+    .panel {
+      background: #191919;
+      border: 1px solid #303030;
+      border-radius: 12px;
+      padding: 22px;
+      margin-bottom: 22px;
+    }
+
+    .panel h3 {
+      font-size: 16px;
+      margin-bottom: 18px;
+    }
+
+    .empty-state {
+      padding: 30px 12px;
+      text-align: center;
+      color: #999999;
+      line-height: 1.8;
+      font-size: 13px;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 7px;
+      background: #e7bd67;
+      color: #17130b;
+      font-weight: 700;
+      padding: 12px 16px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .btn:hover {
+      background: #f2d48f;
+    }
+
+    .btn-secondary {
+      background: #292929;
+      border: 1px solid #414141;
+      color: #ffffff;
+    }
+
+    .section-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .field label {
+      color: #cccccc;
+      font-size: 13px;
+    }
+
+    .field input,
+    .field textarea,
+    .field select {
+      width: 100%;
+      padding: 12px;
+      background: #101010;
+      border: 1px solid #383838;
+      border-radius: 7px;
+      color: #ffffff;
+      font: inherit;
+      font-size: 14px;
+    }
+
+    .field textarea {
+      min-height: 90px;
+      resize: vertical;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 520px;
+    }
+
+    th,
+    td {
+      text-align: left;
+      padding: 14px 12px;
+      border-bottom: 1px solid #303030;
+      font-size: 13px;
+    }
+
+    th {
+      color: #e7bd67;
+      font-weight: 600;
+    }
+
+    td {
+      color: #dddddd;
+    }
+
+    .status {
+      display: inline-block;
+      padding: 6px 9px;
+      border-radius: 5px;
+      background: #302819;
+      color: #e7bd67;
+      font-size: 11px;
+    }
+
+    .notice {
+      background: #211d13;
+      border: 1px solid #45391f;
+      color: #dfc98e;
+      padding: 14px;
+      border-radius: 8px;
+      font-size: 12px;
+      line-height: 1.7;
+      margin-bottom: 20px;
+    }
+
+    .mobile-menu {
+      display: none;
+    }
+
+    @media (max-width: 1000px) {
+      .stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .sidebar {
+        width: 210px;
+      }
+
+      .main {
+        padding: 22px;
+      }
+    }
+
+    @media (max-width: 650px) {
+      .layout {
+        display: block;
+      }
+
+      .sidebar {
+        width: 100%;
+        padding: 20px 16px;
+        border-right: none;
+        border-bottom: 1px solid #303030;
+      }
+
+      .brand {
+        margin-bottom: 18px;
+      }
+
+      .nav-label {
+        display: none;
+      }
+
+      .nav-list {
+        display: flex;
+        gap: 7px;
+        overflow-x: auto;
+        padding-bottom: 5px;
+      }
+
+      .nav-link {
+        width: auto;
+        flex-shrink: 0;
+        margin-bottom: 0;
+        white-space: nowrap;
+        padding: 10px 12px;
+      }
+
+      .main {
+        padding: 22px 15px;
+      }
+
+      .topbar {
+        align-items: flex-start;
+      }
+
+      .topbar h1 {
+        font-size: 23px;
+      }
+
+      .admin-badge {
+        font-size: 10px;
+        padding: 8px;
+      }
+
+      .stats {
+        gap: 10px;
+      }
+
+      .card {
+        padding: 16px;
+      }
+
+      .stat-value {
+        font-size: 22px;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+        gap: 0;
+      }
+
+      .panel {
+        padding: 16px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="layout">
+
+    <aside class="sidebar">
+      <div class="brand">
+        FOOD ADMIN
+        <span>BUSINESS CONTROL CENTER</span>
+      </div>
+
+      <div class="nav-label">MANAGEMENT</div>
+
+      <nav class="nav-list">
+        <button class="nav-link active" data-section="overview">📊 Overview</button>
+        <button class="nav-link" data-section="menu">🍔 Menu</button>
+        <button class="nav-link" data-section="orders">📦 Orders</button>
+        <button class="nav-link" data-section="payments">💳 Payments</button>
+        <button class="nav-link" data-section="sales">📈 Sales</button>
+        <button class="nav-link" data-section="settings">⚙️ Settings</button>
+      </nav>
+    </aside>
+
+    <main class="main">
+
+      <header class="topbar">
+        <div>
+          <h1 id="page-title">Dashboard Overview</h1>
+          <p class="muted">Manage your food business from one place.</p>
+        </div>
+        <div class="admin-badge">ADMIN PANEL</div>
+      </header>
+
+      <section class="section active" id="overview">
+        <div class="section-heading">
+          <h2>Business Overview</h2>
+          <p class="muted">Your business at a glance.</p>
+        </div>
+
+        <div class="notice">
+          Welcome to your admin dashboard. Live orders and sales will appear
+          here after we connect Supabase and configure your business data.
+        </div>
+
+        <div class="stats">
+          <div class="card">
+            <p class="stat-label">TOTAL ORDERS</p>
+            <div class="stat-value" id="total-orders">0</div>
+            <p class="stat-note">Orders recorded</p>
+          </div>
+
+          <div class="card">
+            <p class="stat-label">PENDING ORDERS</p>
+            <div class="stat-value" id="pending-orders">0</div>
+            <p class="stat-note">Awaiting processing</p>
+          </div>
+
+          <div class="card">
+            <p class="stat-label">MENU ITEMS</p>
+            <div class="stat-value" id="total-menu">0</div>
+            <p class="stat-note">Items added on this device</p>
+          </div>
+
+          <div class="card">
+            <p class="stat-label">RECORDED SALES</p>
+            <div class="stat-value" id="total-sales">₦0</div>
+            <p class="stat-note">From recorded orders</p>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3>Recent Orders</h3>
+          <div id="recent-orders" class="empty-state">
+            No orders recorded yet.<br>
+            Customer orders will appear here after we connect the database.
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="menu">
+        <div class="section-toolbar">
+          <div class="section-heading">
+            <h2>Menu Management</h2>
+            <p class="muted">Add and manage meals and prices.</p>
+          </div>
+          <button class="btn" id="show-menu-form">+ Add Meal</button>
+        </div>
+
+        <div class="panel" id="menu-form-panel" hidden>
+          <h3>Add a Menu Item</h3>
+
+          <form id="menu-form">
+            <div class="form-grid">
+              <div class="field">
+                <label for="meal-name">Meal name</label>
+                <input id="meal-name" required maxlength="100">
+              </div>
+
+              <div class="field">
+                <label for="meal-price">Price (₦)</label>
+                <input id="meal-price" type="number" min="1" step="1" required>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="meal-description">Description</label>
+              <textarea id="meal-description" maxlength="500"></textarea>
+            </div>
+
+            <div class="field">
+              <label for="meal-image">Meal photo URL (optional)</label>
+              <input id="meal-image" type="url" placeholder="https://example.com/meal.jpg">
+            </div>
+
+            <button class="btn" type="submit">Save Meal</button>
+            <button class="btn btn-secondary" type="button" id="cancel-menu-form">Cancel</button>
+          </form>
+        </div>
+
+        <div class="panel">
+          <h3>Your Menu</h3>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Meal</th>
+                  <th>Price</th>
+                  <th>Description</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="menu-table">
+                <tr>
+                  <td colspan="4">No menu items added yet.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="muted" style="margin-top:14px">
+            Menu items are currently saved on this device only.
+          </p>
+        </div>
+      </section>
+
+      <section class="section" id="orders">
+        <div class="section-heading">
+          <h2>Order Management</h2>
+          <p class="muted">Review orders and update their status.</p>
+        </div>
+
+        <div class="panel">
+          <div class="notice">
+            Customer orders will appear here after we connect the order form
+            and database.
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Order</th>
+                  <th>Customer</th>
+                  <th>Total</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="orders-table">
+                <tr>
+                  <td colspan="4">No customer orders available yet.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="payments">
+        <div class="section-heading">
+          <h2>Payment Management</h2>
+          <p class="muted">Review payment records and transfer confirmations.</p>
+        </div>
+
+        <div class="panel">
+          <div class="notice">
+            Payment records and proof-of-payment submissions will appear here
+            once the website's payment workflow and database are connected.
+            Never treat an uploaded receipt alone as proof that money has arrived.
+          </div>
+
+          <div class="empty-state">
+            No payment records available yet.
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="sales">
+        <div class="section-heading">
+          <h2>Sales Overview</h2>
+          <p class="muted">Review revenue from recorded orders.</p>
+        </div>
+
+        <div class="panel">
+          <h3>Recorded Revenue</h3>
+          <div class="stat-value" id="sales-total">₦0</div>
+          <p class="muted" style="margin-top:12px">
+            This figure will update from recorded orders. We will connect it
+            to verified payment and order records later.
+          </p>
+        </div>
+      </section>
+
+      <section class="section" id="settings">
+        <div class="section-heading">
+          <h2>Business Settings</h2>
+          <p class="muted">Configure your business information.</p>
+        </div>
+
+        <div class="panel">
+          <form id="settings-form">
+            <div class="field">
+              <label for="business-name">Business name</label>
+              <input id="business-name" placeholder="Enter your food business name" required>
+            </div>
+
+            <div class="field">
+              <label for="business-phone">Business phone number</label>
+              <input id="business-phone" type="tel" placeholder="Enter contact number">
+            </div>
+
+            <div class="field">
+              <label for="business-address">Business location</label>
+              <textarea id="business-address" placeholder="Enter your delivery area"></textarea>
+            </div>
+
+            <button class="btn" type="submit">Save Settings</button>
+          </form>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <script>
+    const navLinks = document.querySelectorAll(".nav-link");
+const sections = document.querySelectorAll(".section");
+const pageTitle = document.getElementById("page-title");
+
+const titles = {
+  overview: "Dashboard Overview",
+  menu: "Menu Management",
+  orders: "Order Management",
+  payments: "Payment Management",
+  sales: "Sales Overview",
+  settings: "Business Settings"
+};
+
+navLinks.forEach(function(link) {
+  link.addEventListener("click", function() {
+    const target = link.dataset.section;
+    
+    navLinks.forEach(function(item) {
+      item.classList.remove("active");
+    });
+    
+    sections.forEach(function(section) {
+      section.classList.remove("active");
+    });
+    
+    link.classList.add("active");
+    document.getElementById(target).classList.add("active");
+    pageTitle.textContent = titles[target];
+  });
+});
+
+let menuItems = [];
+let orderItems = [];
+
+const menuFormPanel = document.getElementById("menu-form-panel");
+const menuForm = document.getElementById("menu-form");
+
+document.getElementById("show-menu-form").addEventListener("click", function() {
+  menuFormPanel.hidden = false;
+});
+
+document.getElementById("cancel-menu-form").addEventListener("click", function() {
+  menuForm.reset();
+  menuFormPanel.hidden = true;
+});
+
+
+menuForm.addEventListener("submit", async function(event) {
+  event.preventDefault();
+  
+  const name = document.getElementById("meal-name").value.trim();
+  const price = Number(document.getElementById("meal-price").value);
+  const description = document.getElementById("meal-description").value.trim();
+  const image = document.getElementById("meal-image").value.trim();
+  
+  if (!name || !Number.isFinite(price) || price <= 0) {
+    alert("Please enter a valid meal name and price.");
+    return;
+  }
+  
+  const meal = {
+    name: name,
+    price: price,
+    description: description,
+    image: image || null
+  };
+  
+  const saveButton = menuForm.querySelector('button[type="submit"]');
+  
+  saveButton.disabled = true;
+  saveButton.textContent = "Saving...";
+  
+  try {
+    const { error } = await fatiluxDB
+      .from("menu_items")
+      .insert([meal]);
+    
+    if (error) {
+      console.error("Could not save meal:", error.message);
+      alert("Could not save meal: " + error.message);
+      return;
+    }
+    
+    menuForm.reset();
+    menuFormPanel.hidden = true;
+    
+    await loadMenu();
+    
+    alert("Meal saved successfully!");
+    
+  } catch (error) {
+    console.error("Unexpected error:", error);
+    alert("Something went wrong while saving the meal.");
+    
+  } finally {
+    saveButton.disabled = false;
+    saveButton.textContent = "Save Meal";
+  }
+});
+
+
+
+
+async function loadMenu() {
+  const { data, error } = await fatiluxDB
+    .from("menu_items")
+    .select("*")
+    .order("id", { ascending: false });
+  
+  if (error) {
+    console.error("Could not load menu:", error.message);
+    return;
+  }
+  
+  menuItems = data || [];
+
+renderMenu();
+}
+
+function renderMenu() {
+  const table = document.getElementById("menu-table");
+  table.replaceChildren();
+  
+  if (menuItems.length === 0) {
+    const row = document.createElement("tr");
+    const cell = document.createElement("td");
+    
+    cell.colSpan = 4;
+    cell.textContent = "No menu items added yet.";
+    
+    row.appendChild(cell);
+    table.appendChild(row);
+    return;
+  }
+  
+  menuItems.forEach(function(item) {
+    const row = document.createElement("tr");
+    
+    // Meal image
+const imageCell = document.createElement("td");
+
+if (item.image) {
+  const mealImage = document.createElement("img");
+  
+  mealImage.src = item.image;
+  mealImage.alt = item.name;
+  mealImage.style.width = "60px";
+  mealImage.style.height = "60px";
+  mealImage.style.objectFit = "cover";
+  mealImage.style.borderRadius = "8px";
+  
+  imageCell.appendChild(mealImage);
+} else {
+  imageCell.textContent = "No image";
+}
+
+row.appendChild(imageCell);
+
+// Meal name, price, and description
+[
+  item.name,
+  "₦" + Number(item.price).toLocaleString("en-NG"),
+  item.description || "—"
+].forEach(function(value) {
+  const cell = document.createElement("td");
+  
+  cell.textContent = value;
+  row.appendChild(cell);
+});
+    
+    const actionCell = document.createElement("td");
+    const deleteButton = document.createElement("button");
+    
+    deleteButton.className = "btn btn-secondary";
+    deleteButton.textContent = "Delete";
+    
+    deleteButton.addEventListener("click", async function() {
+      if (!confirm("Delete this menu item?")) {
+        return;
+      }
+      
+      const { error } = await fatiluxDB
+        .from("menu_items")
+        .delete()
+        .eq("id", item.id);
+      
+      if (error) {
+        console.error("Could not delete meal:", error.message);
+        alert("Could not delete meal: " + error.message);
+        return;
+      }
+      
+      await loadMenu();
+      alert("Meal deleted from the database.");
+    });
+    
+    actionCell.appendChild(deleteButton);
+    row.appendChild(actionCell);
+    table.appendChild(row);
+  });
+}
+
+</script> 
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+<script>
+  const fatiluxDB = window.supabase.createClient(
+    'https://wxcebwtbizestzssalab.supabase.co',
+    'sb_publishable_6TtWxCUFQu1iBeTVxd1LkA_mgWFhz4o'
+  );
+
+  async function testDatabaseConnection() {
+    const { data, error } = await fatiluxDB
+      .from('menu_items')
+      .select('*')
+      .limit(1);
+
+    if (error) {
+      console.error('Database connection error:', error.message);
+      return;
+    }
+
+    console.log('FATILUX KITCHEN database connected!');
+    console.log('Menu data:', data);
+  }
+
+  testDatabaseConnection();
+  loadMenu();
+</script>
+
+</body>
+</html>
